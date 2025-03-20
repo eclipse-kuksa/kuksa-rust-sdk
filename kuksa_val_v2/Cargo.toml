@@ -14,9 +14,9 @@ tokio = { workspace = true, features = [
 ] }
 tokio-stream = { workspace = true, features = ["sync"] }
 http = "0.2.8"
-prost-types = "0.12.6"
+prost-types = { workspace = true }
 test-tag = "0.1.4"
-prost = "0.11"
+prost = { workspace = true }
 
 [lib]
 name = "kuksa_val_v2"
