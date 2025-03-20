@@ -1,0 +1,20 @@
+[package]
+name = "kuksa-rust-sdk"
+version = "0.6.0-dev.0"
+authors = ["Eclipse KUKSA Project"]
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+databroker-proto = { workspace = true }
+kuksa-common = { workspace = true }
+kuksa-val-v1 = { workspace = true, optional = true }
+kuksa-val-v2 = { workspace = true, optional = true }
+sdv-databroker-v1 = { workspace = true, optional = true }
+
+
+[features]
+default = ["v2"]
+sdv = ["dep:sdv-databroker-v1"]
+v1 = ["dep:kuksa-val-v1"]
+v2 = ["dep:kuksa-val-v2"]
