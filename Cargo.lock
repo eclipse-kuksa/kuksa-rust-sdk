@@ -191,6 +191,7 @@ version = "0.1.0"
 dependencies = [
  "databroker-proto",
  "kuksa-common",
+ "kuksa-rust-sdk",
  "kuksa-val-v1",
  "kuksa-val-v2",
  "prost-types 0.12.6",
@@ -480,6 +481,16 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tonic",
+]
+
+[[package]]
+name = "kuksa-rust-sdk"
+version = "0.6.0-dev.0"
+dependencies = [
+ "databroker-proto",
+ "kuksa-val-v1",
+ "kuksa-val-v2",
+ "sdv-databroker-v1",
 ]
 
 [[package]]

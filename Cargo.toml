@@ -8,6 +8,7 @@ members = [
     "databroker-examples",
     "kuksa_val_v2",
     "databroker-proto",
+    "kuksa-rust-sdk",
 ]
 
 [workspace.dependencies]
