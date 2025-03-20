@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-kuksa-common = { path = "../common"}
+kuksa-common = { workspace = true }
 databroker-proto = { workspace = true }
 tonic = { workspace = true, features = ["transport", "channel"] }
 tokio = { workspace = true, features = [

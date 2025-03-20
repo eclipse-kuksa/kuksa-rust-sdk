@@ -12,6 +12,11 @@ members = [
 
 [workspace.dependencies]
 databroker-proto = { path = "databroker-proto" }
+kuksa-common = { path = "common" }
+kuksa-val-v1 = { path = "kuksa" }
+kuksa-val-v2 = { path = "kuksa_val_v2" }
+sdv-databroker-v1 = { path = "sdv" }
+
 # prost has no features
 prost = "0.12.6"
 # prost-types has no features
