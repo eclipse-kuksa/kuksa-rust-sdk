@@ -1,5 +1,5 @@
 [package]
-name = "kuksa_val_v2"
+name = "kuksa-val-v2"
 version = "0.6.0-dev.0"
 authors = ["Eclipse KUKSA Project"]
 edition = "2021"
