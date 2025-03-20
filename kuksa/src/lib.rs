@@ -30,6 +30,11 @@ impl KuksaClient {
         }
     }
 
+    pub fn from_host(host: &'static str) -> Self {
+        let uri = Uri::from_static(host);
+        Self::new(uri)
+    }
+
     async fn set(&mut self, entry: DataEntry, _fields: Vec<i32>) -> Result<(), ClientError> {
         let mut client = proto::v1::val_client::ValClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),

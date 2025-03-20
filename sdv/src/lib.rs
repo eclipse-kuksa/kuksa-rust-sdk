@@ -28,6 +28,11 @@ impl SDVClient {
         }
     }
 
+    pub fn from_host(host: &'static str) -> Self {
+        let uri = Uri::from_static(host);
+        Self::new(uri)
+    }
+
     pub async fn get_metadata(
         &mut self,
         paths: Vec<String>,
