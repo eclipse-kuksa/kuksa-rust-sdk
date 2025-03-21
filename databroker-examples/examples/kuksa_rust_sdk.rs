@@ -12,11 +12,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  * ******************************************************************************
  */
-use databroker_proto::kuksa::val::v2::{Datapoint, SubscribeResponse};
-use kuksa_common::ClientError;
 use kuksa_rust_sdk::{sdv_proto, v1_proto, v2_proto};
 use std::collections::HashMap;
-use tonic::Streaming;
 
 #[tokio::main]
 async fn main() {
@@ -32,10 +29,10 @@ async fn main() {
 }
 
 async fn execute_v2_calls(host: &'static str) {
-    let mut v2Client = kuksa_rust_sdk::v2::KuksaClientV2::from_host(host);
+    let mut v2_client = kuksa_rust_sdk::v2::KuksaClientV2::from_host(host);
 
-    match v2Client.subscribe(vec!["Vehicle.Speed"], None).await {
-        Ok(stream) => {
+    match v2_client.subscribe(vec!["Vehicle.Speed"], None).await {
+        Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
         }
         Err(err) => {
@@ -43,7 +40,7 @@ async fn execute_v2_calls(host: &'static str) {
         }
     }
 
-    match v2Client
+    match v2_client
         .publish_value(
             "Vehicle.Speed",
             v2_proto::Value {
@@ -66,7 +63,7 @@ async fn execute_v2_calls(host: &'static str) {
         }
     }
 
-    match v2Client.get_value("Vehicle.Speed").await {
+    match v2_client.get_value("Vehicle.Speed").await {
         Ok(response) => {
             println!("Got value for Vehicle.Speed: {:?}", response);
         }
@@ -80,10 +77,10 @@ async fn execute_v2_calls(host: &'static str) {
 }
 
 async fn execute_v1_calls(host: &'static str) {
-    let mut v1Client = kuksa_rust_sdk::v1::KuksaClient::from_host(host);
+    let mut v1_client = kuksa_rust_sdk::v1::KuksaClient::from_host(host);
 
-    match v1Client.subscribe(vec!["Vehicle.Speed"]).await {
-        Ok(stream) => {
+    match v1_client.subscribe(vec!["Vehicle.Speed"]).await {
+        Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
         }
         Err(err) => {
@@ -103,7 +100,7 @@ async fn execute_v1_calls(host: &'static str) {
         },
     );
 
-    match v1Client.set_current_values(datapoints).await {
+    match v1_client.set_current_values(datapoints).await {
         Ok(_) => {
             println!("Successfully set datapoints")
         }
@@ -112,9 +109,10 @@ async fn execute_v1_calls(host: &'static str) {
         }
     }
 
-    match v1Client
+    match v1_client
         .get_current_values(vec!["Vehicle.Speed".to_owned()])
-        .await {
+        .await
+    {
         Ok(response) => {
             println!("Got value for Vehicle.Speed: {:?}", response);
         }
@@ -125,10 +123,10 @@ async fn execute_v1_calls(host: &'static str) {
 }
 
 async fn execute_sdv_calls(host: &'static str) {
-    let mut sdvClient = kuksa_rust_sdk::sdv::SDVClient::from_host(host);
+    let mut sdv_client = kuksa_rust_sdk::sdv::SDVClient::from_host(host);
 
-    match sdvClient.subscribe("Vehicle.Speed".to_owned()).await {
-        Ok(stream) => {
+    match sdv_client.subscribe("Vehicle.Speed".to_owned()).await {
+        Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
         }
         Err(err) => {
@@ -144,7 +142,7 @@ async fn execute_sdv_calls(host: &'static str) {
             value: Some(sdv_proto::datapoint::Value::FloatValue(50.0)),
         },
     );
-    match sdvClient.set_datapoints(datapoints).await {
+    match sdv_client.set_datapoints(datapoints).await {
         Ok(_) => {
             println!("Successfully set datapoints")
         }
@@ -153,7 +151,7 @@ async fn execute_sdv_calls(host: &'static str) {
         }
     }
 
-    match sdvClient.get_datapoints(vec!["Vehiclce.Speed"]).await {
+    match sdv_client.get_datapoints(vec!["Vehiclce.Speed"]).await {
         Ok(response) => {
             println!("Got value for Vehicle.Speed: {:?}", response);
         }
