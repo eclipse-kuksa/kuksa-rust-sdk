@@ -1,0 +1,218 @@
+# /********************************************************************************
+# * Copyright (c) 2022 Contributors to the Eclipse Foundation
+# *
+# * See the NOTICE file(s) distributed with this work for additional
+# * information regarding copyright ownership.
+# *
+# * This program and the accompanying materials are made available under the
+# * terms of the Apache License 2.0 which is available at
+# * http://www.apache.org/licenses/LICENSE-2.0
+# *
+# * SPDX-License-Identifier: Apache-2.0
+# ********************************************************************************/
+
+name: Build kuksa-rust-sdk
+
+on:
+  push:
+    branches: [ main]
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+  # Run every Sunday night to check regressions, for example from clippy
+  schedule:
+    - cron: "0 4 * * 0"
+
+# suffix to avoid cancellation when running from release workflow
+concurrency:
+      group: ${{ github.ref }}-${{ github.workflow }}-rust-sdk
+      cancel-in-progress: true
+
+# Needed as default_workflow_permissions is "read"
+permissions:
+  packages: write
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            target/
+          key: rust-sdk-lint-${{ hashFiles('**/Cargo.lock') }}
+      - name: Show toolchain information
+        working-directory: ${{github.workspace}}
+        run: |
+          rustup toolchain list
+          cargo --version
+      - name: cargo fmt
+        working-directory: ${{github.workspace}}
+        run: cargo fmt -- --check
+      - name: cargo clippy
+        working-directory: ${{github.workspace}}
+        run: cargo clippy --all-targets -- -W warnings -D warnings
+      - name: cargo clippy (feature viss)
+        working-directory: ${{github.workspace}}
+        run: cargo clippy --features viss --all-targets -- -W warnings -D warnings
+
+
+  kuksa-lib:
+    name: Build Kuksa Rust SDK
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            target/
+          key: rust-sdk-lint-${{ hashFiles('**/Cargo.lock') }}
+      - name: Show toolchain information
+        working-directory: ${{github.workspace}}
+        run: |
+          rustup toolchain list
+          cargo --version
+      - name: Build lib
+        working-directory: ${{github.workspace}}
+        run: |
+          cargo build
+
+  lib-tests:
+    name: Run Kuksa Rust SDK tests
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            ~/.cache/pip/
+            target/
+          key: rust-sdk-coverage-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run Lib Tests
+        uses: ./.github/actions/run-lib-tests
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    strategy:
+      matrix:
+        platform:
+          - name: amd64
+          - name: arm64
+          - name: riscv64
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          ~/.cargo/.crates.toml
+          ~/.cargo/.crates2.json
+          target-*/
+        key: rust-sdk-release-${{ matrix.platform.name }}-${{ hashFiles('**/Cargo.lock') }}
+    - uses: actions/setup-python@v5
+      # Needed for pip
+      with:
+        python-version: '3.12'
+    - name: Install build prerequisites
+      working-directory: ${{github.workspace}}/
+      run: |
+        cargo install cross cargo-license cargo-cyclonedx
+        pip install "git+https://github.com/eclipse-kuksa/kuksa-common.git@v1#subdirectory=sbom-tools"
+    - name: Build
+      working-directory: ${{github.workspace}}
+      env:
+        KUKSA_DATABROKER_FEATURES: databroker/viss,databroker/tls
+        KUKSA_DATABROKER_SBOM: y
+      run: |
+        ./scripts/build-databroker.sh ${{ matrix.platform.name }}
+
+    - name: "Archiving artifacts"
+      shell: bash
+      working-directory: ${{github.workspace}}/dist/${{ matrix.platform.name }}
+      run: |
+        tar -czf ../databroker-${{ matrix.platform.name }}.tar.gz *
+
+    - name: "Uploading  artifacts"
+      uses: actions/upload-artifact@v4
+      with:
+          name: databroker-${{ matrix.platform.name }}
+          path: ${{github.workspace}}/dist/databroker-${{ matrix.platform.name}}.tar.gz
+          if-no-files-found: error
+
+  bom:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: databroker-bom-${{ hashFiles('**/Cargo.lock') }}
+
+      # Follows the pattern from
+      # https://github.com/eclipse/dash-licenses?tab=readme-ov-file#example-rustcargo
+      - name: "Using cargo to create Dash input"
+        working-directory: ${{github.workspace}}/
+        # target all is not really needed, and will also return i.e. wasm deps, however
+        # better safe than sorry, the alternative would be running this for each currently
+        # built target  and combining the lists, but that would need adapting, when
+        # adding targets, or also when i.e. switching between MUSL/glibc. So this is safer
+        run: |
+          cargo tree -e normal --prefix none --no-dedupe -p databroker --target all --all-features  > ${{github.workspace}}/cargodeps
+          cat ${{github.workspace}}/cargodeps | sort -u  \
+          | grep -v '^[[:space:]]*$' | grep -v kuksa | grep -v databroker  \
+          | sed -E 's|([^ ]+) v([^ ]+).*|crate/cratesio/-/\1/\2|' \
+          > ${{github.workspace}}/dash-databroker-deps
+
+      - name: Dash license check
+        uses: eclipse-kuksa/kuksa-actions/check-dash@4
+        with:
+          dashinput: ${{github.workspace}}/dash-databroker-deps
+          dashtoken: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
+
+  check-doc-links:
+    name: Check links in markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: eclipse-kuksa/kuksa-actions/check-markdown@4
