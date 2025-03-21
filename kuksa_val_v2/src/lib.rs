@@ -507,7 +507,7 @@ mod tests {
 
             let mut client = Self::new(Uri::from_static(host));
 
-            if (token_type.is_some()) {
+            if token_type.is_some() {
                 let jwt = read_jwt(token_type.unwrap());
                 client
                     .basic_client
