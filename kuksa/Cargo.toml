@@ -35,3 +35,6 @@ path = "src/lib.rs"
 
 [features]
 tls = ["tonic/tls"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(test)'] }
