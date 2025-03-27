@@ -11,11 +11,12 @@
 * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
 
+use crate::kuksa::common::types;
 use std::collections::HashMap;
 
+use crate::kuksa::common::{Client, ClientError, SDVClientTraitV1};
 use databroker_proto::sdv::databroker as proto;
 use http::Uri;
-use kuksa_common::{Client, ClientError, SDVClientTraitV1};
 use tonic::async_trait;
 
 pub struct SDVClient {
@@ -37,16 +38,16 @@ impl SDVClient {
 
 #[async_trait]
 impl SDVClientTraitV1 for SDVClient {
-    type SensorUpdateType = kuksa_common::types::SensorUpdateSDVTypeV1;
-    type UpdateActuationType = kuksa_common::types::UpdateActuationSDVTypeV1;
-    type PathType = kuksa_common::types::PathSDVTypeV1;
-    type SubscribeType = kuksa_common::types::SubscribeSDVTypeV1;
-    type PublishResponseType = kuksa_common::types::PublishResponseSDVTypeV1;
-    type GetResponseType = kuksa_common::types::GetResponseSDVTypeV1;
-    type SubscribeResponseType = kuksa_common::types::SubscribeResponseSDVTypeV1;
-    type ProvideResponseType = kuksa_common::types::ProvideResponseSDVTypeV1;
-    type ActuateResponseType = kuksa_common::types::ActuateResponseSDVTypeV1;
-    type MetadataResponseType = kuksa_common::types::MetadataResponseSDVTypeV1;
+    type SensorUpdateType = types::SensorUpdateSDVTypeV1;
+    type UpdateActuationType = types::UpdateActuationSDVTypeV1;
+    type PathType = types::PathSDVTypeV1;
+    type SubscribeType = types::SubscribeSDVTypeV1;
+    type PublishResponseType = types::PublishResponseSDVTypeV1;
+    type GetResponseType = types::GetResponseSDVTypeV1;
+    type SubscribeResponseType = types::SubscribeResponseSDVTypeV1;
+    type ProvideResponseType = types::ProvideResponseSDVTypeV1;
+    type ActuateResponseType = types::ActuateResponseSDVTypeV1;
+    type MetadataResponseType = types::MetadataResponseSDVTypeV1;
 
     async fn update_datapoints(
         &mut self,

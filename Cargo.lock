@@ -246,12 +246,8 @@ name = "databroker-examples"
 version = "0.1.0"
 dependencies = [
  "databroker-proto",
- "kuksa-common",
  "kuksa-rust-sdk",
- "kuksa-val-v1",
- "kuksa-val-v2",
  "prost-types 0.12.6",
- "sdv-databroker-v1",
  "tokio",
  "tokio-stream",
  "tonic",
@@ -568,9 +564,9 @@ checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
 
 [[package]]
 name = "jiff"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d699bc6dfc879fb1bf9bdff0d4c56f0884fc6f0d0eb0fba397a6d00cd9a6b85e"
+checksum = "c102670231191d07d37a35af3eb77f1f0dbf7a71be51a962dcd57ea607be7260"
 dependencies = [
  "jiff-static",
  "log",
@@ -581,9 +577,9 @@ dependencies = [
 
 [[package]]
 name = "jiff-static"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d16e75759ee0aa64c57a56acbf43916987b20c77373cb7e808979e02b93c9f9"
+checksum = "4cdde31a9d349f1b1f51a0b3714a5940ac022976f4b49485fc04be052b183b4c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -591,50 +587,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "kuksa-common"
+name = "kuksa-rust-sdk"
 version = "0.6.0-dev.0"
 dependencies = [
  "databroker-proto",
  "env_logger",
  "http",
  "log",
- "prost 0.12.6",
- "prost-types 0.12.6",
- "tokio",
- "tokio-stream",
- "tonic",
-]
-
-[[package]]
-name = "kuksa-rust-sdk"
-version = "0.6.0-dev.0"
-dependencies = [
- "databroker-proto",
- "kuksa-common",
- "kuksa-val-v1",
- "kuksa-val-v2",
- "sdv-databroker-v1",
-]
-
-[[package]]
-name = "kuksa-val-v1"
-version = "0.6.0-dev.0"
-dependencies = [
- "databroker-proto",
- "http",
- "kuksa-common",
- "tokio",
- "tokio-stream",
- "tonic",
-]
-
-[[package]]
-name = "kuksa-val-v2"
-version = "0.6.0-dev.0"
-dependencies = [
- "databroker-proto",
- "http",
- "kuksa-common",
  "prost 0.12.6",
  "prost-types 0.12.6",
  "test-tag",
@@ -1024,9 +983,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "ring"
-version = "0.17.11"
+version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da5349ae27d3887ca812fb375b45a4fbb36d8d12d2df394968cd86e35683fe73"
+checksum = "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7"
 dependencies = [
  "cc",
  "cfg-if",
@@ -1106,18 +1065,6 @@ name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
-
-[[package]]
-name = "sdv-databroker-v1"
-version = "0.6.0-dev.0"
-dependencies = [
- "databroker-proto",
- "http",
- "kuksa-common",
- "tokio",
- "tokio-stream",
- "tonic",
-]
 
 [[package]]
 name = "serde"

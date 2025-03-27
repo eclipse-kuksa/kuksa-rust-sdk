@@ -10,13 +10,15 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
+use crate::kuksa::common;
+use crate::kuksa::common::types;
+pub use crate::kuksa::common::{Client, ClientError, ClientTraitV2};
 use databroker_proto::kuksa::val::v2::{
     signal_id::Signal::Path, val_client::ValClient, ActuateRequest, BatchActuateRequest, Datapoint,
     GetServerInfoRequest, GetValueRequest, GetValuesRequest, ListMetadataRequest,
     PublishValueRequest, SignalId, SubscribeByIdRequest, SubscribeRequest, Value,
 };
 use http::Uri;
-pub use kuksa_common::{Client, ClientError, ClientTraitV2};
 use prost_types::Timestamp;
 use std::collections::HashMap;
 use std::fmt::Debug;
@@ -24,8 +26,8 @@ use std::time::SystemTime;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::async_trait;
 
-use kuksa_common::conversion::{ConvertToV1, ConvertToV2};
-use kuksa_common::types::{OpenProviderStream, ServerInfo};
+use crate::kuksa::common::conversion::{ConvertToV1, ConvertToV2};
+use crate::kuksa::common::types::{OpenProviderStream, ServerInfo};
 
 #[derive(Debug)]
 pub struct KuksaClientV2 {
@@ -83,17 +85,17 @@ impl KuksaClientV2 {
 }
 
 #[async_trait]
-impl kuksa_common::ClientTraitV1 for KuksaClientV2 {
-    type SensorUpdateType = kuksa_common::types::SensorUpdateTypeV1;
-    type UpdateActuationType = kuksa_common::types::UpdateActuationTypeV1;
-    type PathType = kuksa_common::types::PathTypeV1;
-    type SubscribeType = kuksa_common::types::SubscribeTypeV1;
-    type PublishResponseType = kuksa_common::types::PublishResponseTypeV1;
-    type GetResponseType = kuksa_common::types::GetResponseTypeV1;
-    type SubscribeResponseType = kuksa_common::types::SubscribeResponseTypeV1;
-    type ProvideResponseType = kuksa_common::types::ProvideResponseTypeV1;
-    type ActuateResponseType = kuksa_common::types::ActuateResponseTypeV1;
-    type MetadataResponseType = kuksa_common::types::MetadataResponseTypeV1;
+impl common::ClientTraitV1 for KuksaClientV2 {
+    type SensorUpdateType = types::SensorUpdateTypeV1;
+    type UpdateActuationType = types::UpdateActuationTypeV1;
+    type PathType = types::PathTypeV1;
+    type SubscribeType = types::SubscribeTypeV1;
+    type PublishResponseType = types::PublishResponseTypeV1;
+    type GetResponseType = types::GetResponseTypeV1;
+    type SubscribeResponseType = types::SubscribeResponseTypeV1;
+    type ProvideResponseType = types::ProvideResponseTypeV1;
+    type ActuateResponseType = types::ActuateResponseTypeV1;
+    type MetadataResponseType = types::MetadataResponseTypeV1;
 
     async fn set_current_values(
         &mut self,
@@ -181,25 +183,25 @@ impl kuksa_common::ClientTraitV1 for KuksaClientV2 {
 
 #[async_trait]
 impl ClientTraitV2 for KuksaClientV2 {
-    type SensorUpdateType = kuksa_common::types::SensorUpdateTypeV2;
-    type UpdateActuationType = kuksa_common::types::UpdateActuationTypeV2;
-    type MultipleUpdateActuationType = kuksa_common::types::MultipleUpdateActuationTypeV2;
-    type PathType = kuksa_common::types::PathTypeV2;
-    type PathsType = kuksa_common::types::PathsTypeV2;
-    type IdsType = kuksa_common::types::IdsTypeV2;
-    type SubscribeType = kuksa_common::types::SubscribeTypeV2;
-    type SubscribeByIdType = kuksa_common::types::SubscribeByIdTypeV2;
-    type PublishResponseType = kuksa_common::types::PublishResponseTypeV2;
-    type GetResponseType = kuksa_common::types::GetResponseTypeV2;
-    type MultipleGetResponseType = kuksa_common::types::MultipleGetResponseTypeV2;
-    type SubscribeResponseType = kuksa_common::types::SubscribeResponseTypeV2;
-    type SubscribeByIdResponseType = kuksa_common::types::SubscribeByIdResponseTypeV2;
-    type ProvideResponseType = kuksa_common::types::ProvideResponseTypeV2;
-    type ActuateResponseType = kuksa_common::types::ActuateResponseTypeV2;
-    type OpenProviderStreamResponseType = kuksa_common::types::OpenProviderStreamResponseTypeV2;
-    type MetadataType = kuksa_common::types::MetadataTypeV2;
-    type MetadataResponseType = kuksa_common::types::MetadataResponseTypeV2;
-    type ServerInfoType = kuksa_common::types::ServerInfoTypeV2;
+    type SensorUpdateType = types::SensorUpdateTypeV2;
+    type UpdateActuationType = types::UpdateActuationTypeV2;
+    type MultipleUpdateActuationType = types::MultipleUpdateActuationTypeV2;
+    type PathType = types::PathTypeV2;
+    type PathsType = types::PathsTypeV2;
+    type IdsType = types::IdsTypeV2;
+    type SubscribeType = types::SubscribeTypeV2;
+    type SubscribeByIdType = types::SubscribeByIdTypeV2;
+    type PublishResponseType = types::PublishResponseTypeV2;
+    type GetResponseType = types::GetResponseTypeV2;
+    type MultipleGetResponseType = types::MultipleGetResponseTypeV2;
+    type SubscribeResponseType = types::SubscribeResponseTypeV2;
+    type SubscribeByIdResponseType = types::SubscribeByIdResponseTypeV2;
+    type ProvideResponseType = types::ProvideResponseTypeV2;
+    type ActuateResponseType = types::ActuateResponseTypeV2;
+    type OpenProviderStreamResponseType = types::OpenProviderStreamResponseTypeV2;
+    type MetadataType = types::MetadataTypeV2;
+    type MetadataResponseType = types::MetadataResponseTypeV2;
+    type ServerInfoType = types::ServerInfoTypeV2;
 
     /// Get the latest value of a signal
     /// If the signal exist but does not have a valid value
@@ -593,8 +595,8 @@ impl ClientTraitV2 for KuksaClientV2 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::TokenType::{Read, ReadWrite};
-    use databroker_proto::kuksa::val::v2::open_provider_stream_request::Action;
+    use crate::kuksa::val::v2::tests::TokenType::{Read, ReadWrite};
+    use crate::v2_proto::open_provider_stream_request::Action;
     use databroker_proto::kuksa::val::v2::value::TypedValue;
     use databroker_proto::kuksa::val::v2::ProvideActuationRequest;
     use std::fs;

@@ -5,12 +5,8 @@ edition = "2021"
 
 [dependencies]
 databroker-proto = { workspace = true }
-kuksa-common = { workspace = true }
-kuksa-val-v2 = { workspace = true }
-kuksa-val-v1 = { workspace = true }
-sdv-databroker-v1 = { workspace = true }
 tokio = { version = "1.17.0", features = ["full"] }
 tokio-stream = "0.1.8"
 tonic = { workspace = true, features = ["transport", "channel"] }
 prost-types = { workspace = true }
-kuksa-rust-sdk = { workspace = true , features = ["sdv", "v1", "v2"]}
+kuksa-rust-sdk = { workspace = true }
