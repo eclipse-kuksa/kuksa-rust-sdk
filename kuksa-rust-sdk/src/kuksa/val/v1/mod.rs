@@ -1,24 +1,28 @@
-/********************************************************************************
-* Copyright (c) 2025 Contributors to the Eclipse Foundation
-*
-* See the NOTICE file(s) distributed with this work for additional
-* information regarding copyright ownership.
-*
-* This program and the accompanying materials are made available under the
-* terms of the Apache License 2.0 which is available at
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* SPDX-License-Identifier: Apache-2.0
-********************************************************************************/
+/*
+ * *******************************************************************************
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *
+ *  See the NOTICE file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License 2.0 which is available at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ * ******************************************************************************
+ */
 
+use crate::kuksa::common;
+use crate::kuksa::common::conversion::{ConvertToSDV, ConvertToV1};
+use crate::kuksa::common::types;
+use crate::kuksa::common::ClientTraitV1;
 use http::Uri;
-use kuksa_common::conversion::{ConvertToSDV, ConvertToV1};
-use kuksa_common::ClientTraitV1;
 use tonic::async_trait;
 
 pub use databroker_proto::kuksa::val::{self as proto, v1::DataEntry};
 
-pub use kuksa_common::{Client, ClientError};
+pub use crate::kuksa::common::{Client, ClientError};
 
 #[derive(Debug)]
 pub struct KuksaClient {
@@ -114,17 +118,17 @@ impl KuksaClient {
 }
 
 #[async_trait]
-impl kuksa_common::SDVClientTraitV1 for KuksaClient {
-    type SensorUpdateType = kuksa_common::types::SensorUpdateSDVTypeV1;
-    type UpdateActuationType = kuksa_common::types::UpdateActuationSDVTypeV1;
-    type PathType = kuksa_common::types::PathSDVTypeV1;
-    type SubscribeType = kuksa_common::types::SubscribeSDVTypeV1;
-    type PublishResponseType = kuksa_common::types::PublishResponseSDVTypeV1;
-    type GetResponseType = kuksa_common::types::GetResponseSDVTypeV1;
-    type SubscribeResponseType = kuksa_common::types::SubscribeResponseSDVTypeV1;
-    type ProvideResponseType = kuksa_common::types::ProvideResponseSDVTypeV1;
-    type ActuateResponseType = kuksa_common::types::ActuateResponseSDVTypeV1;
-    type MetadataResponseType = kuksa_common::types::MetadataResponseSDVTypeV1;
+impl common::SDVClientTraitV1 for KuksaClient {
+    type SensorUpdateType = types::SensorUpdateSDVTypeV1;
+    type UpdateActuationType = types::UpdateActuationSDVTypeV1;
+    type PathType = types::PathSDVTypeV1;
+    type SubscribeType = types::SubscribeSDVTypeV1;
+    type PublishResponseType = types::PublishResponseSDVTypeV1;
+    type GetResponseType = types::GetResponseSDVTypeV1;
+    type SubscribeResponseType = types::SubscribeResponseSDVTypeV1;
+    type ProvideResponseType = types::ProvideResponseSDVTypeV1;
+    type ActuateResponseType = types::ActuateResponseSDVTypeV1;
+    type MetadataResponseType = types::MetadataResponseSDVTypeV1;
 
     async fn update_datapoints(
         &mut self,
@@ -173,7 +177,7 @@ impl kuksa_common::SDVClientTraitV1 for KuksaClient {
         paths: Self::PathType,
     ) -> Result<Self::MetadataResponseType, ClientError> {
         Ok(
-            kuksa_common::ClientTraitV1::get_metadata(self, paths.convert_to_v1())
+            common::ClientTraitV1::get_metadata(self, paths.convert_to_v1())
                 .await
                 .unwrap()
                 .convert_to_sdv(),
@@ -182,17 +186,17 @@ impl kuksa_common::SDVClientTraitV1 for KuksaClient {
 }
 
 #[async_trait]
-impl kuksa_common::ClientTraitV1 for KuksaClient {
-    type SensorUpdateType = kuksa_common::types::SensorUpdateTypeV1;
-    type UpdateActuationType = kuksa_common::types::UpdateActuationTypeV1;
-    type PathType = kuksa_common::types::PathTypeV1;
+impl common::ClientTraitV1 for KuksaClient {
+    type SensorUpdateType = types::SensorUpdateTypeV1;
+    type UpdateActuationType = types::UpdateActuationTypeV1;
+    type PathType = types::PathTypeV1;
     type SubscribeType = Self::PathType;
-    type PublishResponseType = kuksa_common::types::PublishResponseTypeV1;
-    type GetResponseType = kuksa_common::types::GetResponseTypeV1;
-    type SubscribeResponseType = kuksa_common::types::SubscribeResponseTypeV1;
-    type ProvideResponseType = kuksa_common::types::ProvideResponseTypeV1;
-    type ActuateResponseType = kuksa_common::types::ActuateResponseTypeV1;
-    type MetadataResponseType = kuksa_common::types::MetadataResponseTypeV1;
+    type PublishResponseType = types::PublishResponseTypeV1;
+    type GetResponseType = types::GetResponseTypeV1;
+    type SubscribeResponseType = types::SubscribeResponseTypeV1;
+    type ProvideResponseType = types::ProvideResponseTypeV1;
+    type ActuateResponseType = types::ActuateResponseTypeV1;
+    type MetadataResponseType = types::MetadataResponseTypeV1;
 
     async fn set_current_values(
         &mut self,

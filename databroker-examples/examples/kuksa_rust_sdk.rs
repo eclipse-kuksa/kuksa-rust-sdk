@@ -12,10 +12,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  * ******************************************************************************
  */
-use kuksa::KuksaClient;
+use kuksa_rust_sdk::kuksa::common;
+use kuksa_rust_sdk::kuksa::val::v1::KuksaClient;
+use kuksa_rust_sdk::kuksa::val::v2::KuksaClientV2;
+use kuksa_rust_sdk::sdv::databroker::v1::SDVClient;
 use kuksa_rust_sdk::{sdv_proto, v1_proto, v2_proto};
-use kuksa_sdv::SDVClient;
-use kuksa_val_v2::KuksaClientV2;
 use std::collections::HashMap;
 
 #[tokio::main]
@@ -34,12 +35,8 @@ async fn main() {
 async fn execute_v2_calls(host: &'static str) {
     let mut v2_client: KuksaClientV2 = KuksaClientV2::from_host(host);
 
-    match kuksa_common::ClientTraitV2::subscribe(
-        &mut v2_client,
-        vec!["Vehicle.Speed".to_owned()],
-        None,
-    )
-    .await
+    match common::ClientTraitV2::subscribe(&mut v2_client, vec!["Vehicle.Speed".to_owned()], None)
+        .await
     {
         Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
@@ -49,7 +46,7 @@ async fn execute_v2_calls(host: &'static str) {
         }
     }
 
-    match kuksa_common::ClientTraitV2::publish_value(
+    match common::ClientTraitV2::publish_value(
         &mut v2_client,
         "Vehicle.Speed".to_owned(),
         v2_proto::Value {
@@ -72,7 +69,7 @@ async fn execute_v2_calls(host: &'static str) {
         }
     }
 
-    match kuksa_common::ClientTraitV2::get_value(&mut v2_client, "Vehicle.Speed".to_owned()).await {
+    match common::ClientTraitV2::get_value(&mut v2_client, "Vehicle.Speed".to_owned()).await {
         Ok(response) => {
             println!("Got value for Vehicle.Speed: {:?}", response);
         }
@@ -88,9 +85,7 @@ async fn execute_v2_calls(host: &'static str) {
 async fn execute_v1_calls(host: &'static str) {
     let mut v1_client: KuksaClient = KuksaClient::from_host(host);
 
-    match kuksa_common::ClientTraitV1::subscribe(&mut v1_client, vec!["Vehicle.Speed".to_owned()])
-        .await
-    {
+    match common::ClientTraitV1::subscribe(&mut v1_client, vec!["Vehicle.Speed".to_owned()]).await {
         Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
         }
@@ -111,7 +106,7 @@ async fn execute_v1_calls(host: &'static str) {
         },
     );
 
-    match kuksa_common::ClientTraitV1::set_current_values(&mut v1_client, datapoints).await {
+    match common::ClientTraitV1::set_current_values(&mut v1_client, datapoints).await {
         Ok(_) => {
             println!("Successfully set datapoints")
         }
@@ -120,7 +115,7 @@ async fn execute_v1_calls(host: &'static str) {
         }
     }
 
-    match kuksa_common::ClientTraitV1::get_current_values(
+    match common::ClientTraitV1::get_current_values(
         &mut v1_client,
         vec!["Vehicle.Speed".to_owned()],
     )
@@ -138,9 +133,7 @@ async fn execute_v1_calls(host: &'static str) {
 async fn execute_sdv_calls(host: &'static str) {
     let mut sdv_client: SDVClient = SDVClient::from_host(host);
 
-    match kuksa_common::SDVClientTraitV1::subscribe(&mut sdv_client, "Vehicle.Speed".to_owned())
-        .await
-    {
+    match common::SDVClientTraitV1::subscribe(&mut sdv_client, "Vehicle.Speed".to_owned()).await {
         Ok(_) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
         }
@@ -158,7 +151,7 @@ async fn execute_sdv_calls(host: &'static str) {
         },
     );
 
-    match kuksa_common::SDVClientTraitV1::set_datapoints(&mut sdv_client, datapoints).await {
+    match common::SDVClientTraitV1::set_datapoints(&mut sdv_client, datapoints).await {
         Ok(_) => {
             println!("Successfully set datapoints")
         }
@@ -167,7 +160,7 @@ async fn execute_sdv_calls(host: &'static str) {
         }
     }
 
-    match kuksa_common::SDVClientTraitV1::get_datapoints(
+    match common::SDVClientTraitV1::get_datapoints(
         &mut sdv_client,
         vec!["Vehicle.Speed".to_owned()],
     )

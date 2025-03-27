@@ -2,21 +2,13 @@
 resolver = "2"
 
 members = [
-    "common",
-    "kuksa",
-    "sdv",
     "databroker-examples",
-    "kuksa_val_v2",
     "databroker-proto",
     "kuksa-rust-sdk",
 ]
 
 [workspace.dependencies]
 databroker-proto = { path = "databroker-proto" }
-kuksa-common = { path = "common" }
-kuksa-val-v1 = { path = "kuksa" }
-kuksa-val-v2 = { path = "kuksa_val_v2" }
-sdv-databroker-v1 = { path = "sdv" }
 kuksa-rust-sdk = { path = "kuksa-rust-sdk" }
 
 # prost has no features

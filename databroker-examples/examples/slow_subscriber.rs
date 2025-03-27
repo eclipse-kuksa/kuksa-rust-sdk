@@ -11,9 +11,9 @@
 * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
 
-use kuksa::KuksaClient;
-use kuksa_common::to_uri;
-use kuksa_common::ClientTraitV1;
+use kuksa_rust_sdk::kuksa::common::to_uri;
+use kuksa_rust_sdk::kuksa::common::ClientTraitV1;
+use kuksa_rust_sdk::kuksa::val::v1::KuksaClient;
 use std::thread;
 use tokio::time::{sleep, Duration};
 
