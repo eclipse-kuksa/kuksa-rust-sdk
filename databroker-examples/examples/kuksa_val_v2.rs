@@ -12,15 +12,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  * ******************************************************************************
  */
-use databroker_proto::kuksa::val::v2::open_provider_stream_request::Action;
-use databroker_proto::kuksa::val::v2::signal_id::Signal;
-use databroker_proto::kuksa::val::v2::value::TypedValue;
-use databroker_proto::kuksa::val::v2::{
+use kuksa_rust_sdk::kuksa::common::ClientTraitV2;
+use kuksa_rust_sdk::kuksa::val::v2::KuksaClientV2;
+use kuksa_rust_sdk::v2_proto::open_provider_stream_request::Action;
+use kuksa_rust_sdk::v2_proto::signal_id::Signal;
+use kuksa_rust_sdk::v2_proto::value::TypedValue;
+use kuksa_rust_sdk::v2_proto::{
     open_provider_stream_response, OpenProviderStreamRequest, ProvideActuationRequest, SignalId,
     Value,
 };
-use kuksa_rust_sdk::kuksa::common::ClientTraitV2;
-use kuksa_rust_sdk::kuksa::val::v2::KuksaClientV2;
 use open_provider_stream_response::Action::BatchActuateStreamRequest;
 
 #[tokio::main]

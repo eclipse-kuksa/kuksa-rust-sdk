@@ -245,24 +245,11 @@ checksum = "5b63caa9aa9397e2d9480a9b13673856c78d8ac123288526c37d7839f2a86990"
 name = "databroker-examples"
 version = "0.1.0"
 dependencies = [
- "databroker-proto",
  "kuksa-rust-sdk",
  "prost-types 0.12.6",
  "tokio",
  "tokio-stream",
  "tonic",
-]
-
-[[package]]
-name = "databroker-proto"
-version = "0.6.0-dev.0"
-dependencies = [
- "futures-core",
- "prost 0.12.6",
- "prost-types 0.12.6",
- "protobuf-src",
- "tonic",
- "tonic-build",
 ]
 
 [[package]]
@@ -590,16 +577,18 @@ dependencies = [
 name = "kuksa-rust-sdk"
 version = "0.6.0-dev.0"
 dependencies = [
- "databroker-proto",
  "env_logger",
+ "futures-core",
  "http",
  "log",
  "prost 0.12.6",
  "prost-types 0.12.6",
+ "protobuf-src",
  "test-tag",
  "tokio",
  "tokio-stream",
  "tonic",
+ "tonic-build",
 ]
 
 [[package]]

@@ -3,12 +3,10 @@ resolver = "2"
 
 members = [
     "databroker-examples",
-    "databroker-proto",
     "kuksa-rust-sdk",
 ]
 
 [workspace.dependencies]
-databroker-proto = { path = "databroker-proto" }
 kuksa-rust-sdk = { path = "kuksa-rust-sdk" }
 
 # prost has no features

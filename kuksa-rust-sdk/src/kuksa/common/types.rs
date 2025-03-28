@@ -13,9 +13,9 @@
 
 use std::collections::HashMap;
 
-use databroker_proto::kuksa::val::v1 as protoV1;
-use databroker_proto::kuksa::val::v2 as protoV2;
-use databroker_proto::sdv::databroker::v1 as SDVprotoV1;
+use crate::proto::kuksa::val::v1 as protoV1;
+use crate::proto::kuksa::val::v2 as protoV2;
+use crate::proto::sdv::databroker::v1 as SDVprotoV1;
 
 use tonic::Streaming;
 

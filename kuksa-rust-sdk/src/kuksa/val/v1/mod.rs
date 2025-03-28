@@ -20,9 +20,10 @@ use crate::kuksa::common::ClientTraitV1;
 use http::Uri;
 use tonic::async_trait;
 
-pub use databroker_proto::kuksa::val::{self as proto, v1::DataEntry};
+pub use crate::proto::kuksa::val::v1::{self as proto, DataEntry};
 
 pub use crate::kuksa::common::{Client, ClientError};
+use crate::proto::kuksa::val::v1;
 
 #[derive(Debug)]
 pub struct KuksaClient {
@@ -42,12 +43,12 @@ impl KuksaClient {
     }
 
     async fn set(&mut self, entry: DataEntry, _fields: Vec<i32>) -> Result<(), ClientError> {
-        let mut client = proto::v1::val_client::ValClient::with_interceptor(
+        let mut client = v1::val_client::ValClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
-        let set_request = proto::v1::SetRequest {
-            updates: vec![proto::v1::EntryUpdate {
+        let set_request = v1::SetRequest {
+            updates: vec![v1::EntryUpdate {
                 entry: Some(entry),
                 fields: _fields,
             }],
@@ -55,7 +56,7 @@ impl KuksaClient {
         match client.set(set_request).await {
             Ok(response) => {
                 let message = response.into_inner();
-                let mut errors: Vec<proto::v1::Error> = Vec::new();
+                let mut errors: Vec<v1::Error> = Vec::new();
                 if let Some(err) = message.error {
                     errors.push(err);
                 }
@@ -77,16 +78,16 @@ impl KuksaClient {
     async fn get(
         &mut self,
         path: &str,
-        view: proto::v1::View,
+        view: v1::View,
         _fields: Vec<i32>,
     ) -> Result<Vec<DataEntry>, ClientError> {
-        let mut client = proto::v1::val_client::ValClient::with_interceptor(
+        let mut client = v1::val_client::ValClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
 
-        let get_request = proto::v1::GetRequest {
-            entries: vec![proto::v1::EntryRequest {
+        let get_request = v1::GetRequest {
+            entries: vec![v1::EntryRequest {
                 path: path.to_string(),
                 view: view.into(),
                 fields: _fields,
@@ -205,16 +206,13 @@ impl common::ClientTraitV1 for KuksaClient {
         for (path, datapoint) in datapoints {
             match self
                 .set(
-                    proto::v1::DataEntry {
+                    v1::DataEntry {
                         path: path.clone(),
                         value: Some(datapoint),
                         actuator_target: None,
                         metadata: None,
                     },
-                    vec![
-                        proto::v1::Field::Value.into(),
-                        proto::v1::Field::Path.into(),
-                    ],
+                    vec![v1::Field::Value.into(), v1::Field::Path.into()],
                 )
                 .await
             {
@@ -238,11 +236,8 @@ impl common::ClientTraitV1 for KuksaClient {
             match self
                 .get(
                     &path,
-                    proto::v1::View::CurrentValue,
-                    vec![
-                        proto::v1::Field::Value.into(),
-                        proto::v1::Field::Metadata.into(),
-                    ],
+                    v1::View::CurrentValue,
+                    vec![v1::Field::Value.into(), v1::Field::Metadata.into()],
                 )
                 .await
             {
@@ -258,20 +253,20 @@ impl common::ClientTraitV1 for KuksaClient {
         &mut self,
         paths: Self::PathType,
     ) -> Result<Self::ProvideResponseType, ClientError> {
-        let mut client = proto::v1::val_client::ValClient::with_interceptor(
+        let mut client = v1::val_client::ValClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
         let mut entries = Vec::new();
         for path in paths {
-            entries.push(proto::v1::SubscribeEntry {
+            entries.push(v1::SubscribeEntry {
                 path: path.to_string(),
-                view: proto::v1::View::TargetValue.into(),
-                fields: vec![proto::v1::Field::ActuatorTarget.into()],
+                view: v1::View::TargetValue.into(),
+                fields: vec![v1::Field::ActuatorTarget.into()],
             })
         }
 
-        let req = proto::v1::SubscribeRequest { entries };
+        let req = v1::SubscribeRequest { entries };
 
         match client.subscribe(req).await {
             Ok(response) => Ok(response.into_inner()),
@@ -289,11 +284,8 @@ impl common::ClientTraitV1 for KuksaClient {
             match self
                 .get(
                     &path,
-                    proto::v1::View::TargetValue,
-                    vec![
-                        proto::v1::Field::ActuatorTarget.into(),
-                        proto::v1::Field::Metadata.into(),
-                    ],
+                    v1::View::TargetValue,
+                    vec![v1::Field::ActuatorTarget.into(), v1::Field::Metadata.into()],
                 )
                 .await
             {
@@ -309,24 +301,21 @@ impl common::ClientTraitV1 for KuksaClient {
         &mut self,
         paths: Self::SubscribeType,
     ) -> Result<Self::SubscribeResponseType, ClientError> {
-        let mut client = proto::v1::val_client::ValClient::with_interceptor(
+        let mut client = v1::val_client::ValClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
 
         let mut entries = Vec::new();
         for path in paths {
-            entries.push(proto::v1::SubscribeEntry {
+            entries.push(v1::SubscribeEntry {
                 path: path.to_string(),
-                view: proto::v1::View::CurrentValue.into(),
-                fields: vec![
-                    proto::v1::Field::Value.into(),
-                    proto::v1::Field::Metadata.into(),
-                ],
+                view: v1::View::CurrentValue.into(),
+                fields: vec![v1::Field::Value.into(), v1::Field::Metadata.into()],
             })
         }
 
-        let req = proto::v1::SubscribeRequest { entries };
+        let req = v1::SubscribeRequest { entries };
 
         match client.subscribe(req).await {
             Ok(response) => Ok(response.into_inner()),
@@ -348,16 +337,13 @@ impl common::ClientTraitV1 for KuksaClient {
         for (path, datapoint) in datapoints {
             match self
                 .set(
-                    proto::v1::DataEntry {
+                    v1::DataEntry {
                         path: path.clone(),
                         value: None,
                         actuator_target: Some(datapoint),
                         metadata: None,
                     },
-                    vec![
-                        proto::v1::Field::ActuatorTarget.into(),
-                        proto::v1::Field::Path.into(),
-                    ],
+                    vec![v1::Field::ActuatorTarget.into(), v1::Field::Path.into()],
                 )
                 .await
             {
@@ -379,11 +365,7 @@ impl common::ClientTraitV1 for KuksaClient {
 
         for path in paths {
             match self
-                .get(
-                    &path,
-                    proto::v1::View::Metadata,
-                    vec![proto::v1::Field::Metadata.into()],
-                )
+                .get(&path, v1::View::Metadata, vec![v1::Field::Metadata.into()])
                 .await
             {
                 Ok(mut entry) => metadata_result.append(&mut entry),

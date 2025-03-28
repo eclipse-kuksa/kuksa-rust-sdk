@@ -1,3 +1,3 @@
-[submodule "databroker-proto/kuksa-proto"]
-	path = databroker-proto/kuksa-proto
+[submodule "kuksa-rust-sdk/kuksa-proto"]
+	path = kuksa-rust-sdk/kuksa-proto
 	url = git@github.com:eclipse-kuksa/kuksa-proto.git

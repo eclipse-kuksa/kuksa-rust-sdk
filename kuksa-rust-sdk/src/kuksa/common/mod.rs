@@ -14,7 +14,7 @@
 pub mod conversion;
 pub mod types;
 
-use databroker_proto::kuksa::val::v1::Error;
+use crate::proto::kuksa::val::v1::Error;
 use http::Uri;
 use log::info;
 use std::convert::TryFrom;
