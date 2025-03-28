@@ -72,6 +72,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_TERM_COLOR: always
+    strategy:
+      matrix:
+        platform:
+          - name: amd64
+          - name: arm64
+          - name: riscv64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -117,61 +123,6 @@ jobs:
       - name: Run Lib Tests
         uses: ./.github/actions/run-lib-tests
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    env:
-      CARGO_TERM_COLOR: always
-    strategy:
-      matrix:
-        platform:
-          - name: amd64
-          - name: arm64
-          - name: riscv64
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          ~/.cargo/.crates.toml
-          ~/.cargo/.crates2.json
-          target-*/
-        key: rust-sdk-release-${{ matrix.platform.name }}-${{ hashFiles('**/Cargo.lock') }}
-    - uses: actions/setup-python@v5
-      # Needed for pip
-      with:
-        python-version: '3.12'
-    - name: Install build prerequisites
-      working-directory: ${{github.workspace}}/
-      run: |
-        cargo install cross cargo-license cargo-cyclonedx
-        pip install "git+https://github.com/eclipse-kuksa/kuksa-common.git@v1#subdirectory=sbom-tools"
-    - name: Build
-      working-directory: ${{github.workspace}}
-      env:
-        KUKSA_DATABROKER_FEATURES: databroker/viss,databroker/tls
-        KUKSA_DATABROKER_SBOM: y
-      run: |
-        ./scripts/build-databroker.sh ${{ matrix.platform.name }}
-
-    - name: "Archiving artifacts"
-      shell: bash
-      working-directory: ${{github.workspace}}/dist/${{ matrix.platform.name }}
-      run: |
-        tar -czf ../databroker-${{ matrix.platform.name }}.tar.gz *
-
-    - name: "Uploading  artifacts"
-      uses: actions/upload-artifact@v4
-      with:
-          name: databroker-${{ matrix.platform.name }}
-          path: ${{github.workspace}}/dist/databroker-${{ matrix.platform.name}}.tar.gz
-          if-no-files-found: error
-
   bom:
     name: License Compliance Check
     runs-on: ubuntu-latest
@@ -186,7 +137,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: databroker-bom-${{ hashFiles('**/Cargo.lock') }}
+          key: kuksa-rust-sdk-bom-${{ hashFiles('**/Cargo.lock') }}
 
       # Follows the pattern from
       # https://github.com/eclipse/dash-licenses?tab=readme-ov-file#example-rustcargo
@@ -197,9 +148,9 @@ jobs:
         # built target  and combining the lists, but that would need adapting, when
         # adding targets, or also when i.e. switching between MUSL/glibc. So this is safer
         run: |
-          cargo tree -e normal --prefix none --no-dedupe -p databroker --target all --all-features  > ${{github.workspace}}/cargodeps
+          cargo tree -e normal --prefix none --no-dedupe -p kuksa-rust-sdk --target all --all-features  > ${{github.workspace}}/cargodeps
           cat ${{github.workspace}}/cargodeps | sort -u  \
-          | grep -v '^[[:space:]]*$' | grep -v kuksa | grep -v databroker  \
+          | grep -v '^[[:space:]]*$' | grep -v kuksa | grep -v kuksa-rust-sdk  \
           | sed -E 's|([^ ]+) v([^ ]+).*|crate/cratesio/-/\1/\2|' \
           > ${{github.workspace}}/dash-databroker-deps
 

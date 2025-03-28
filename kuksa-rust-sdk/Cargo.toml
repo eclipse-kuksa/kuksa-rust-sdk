@@ -4,6 +4,10 @@ version = "0.6.0-dev.0"
 authors = ["Eclipse KUKSA Project"]
 edition = "2021"
 license = "Apache-2.0"
+description = "The Rust SDK for the Eclipse KUKSA Databroker."
+homepage = "https://eclipse-kuksa.github.io/kuksa-website/"
+repository = "https://github.com/eclipse-kuksa/kuksa-rust-sdk"
+
 
 [dependencies]
 env_logger = "0.11"
