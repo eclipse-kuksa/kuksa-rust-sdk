@@ -15,7 +15,7 @@ use crate::kuksa::common::types;
 use std::collections::HashMap;
 
 use crate::kuksa::common::{Client, ClientError, SDVClientTraitV1};
-use databroker_proto::sdv::databroker as proto;
+use crate::proto::sdv::databroker::v1 as proto;
 use http::Uri;
 use tonic::async_trait;
 
@@ -57,18 +57,18 @@ impl SDVClientTraitV1 for SDVClient {
             .get_metadata(datapoints.keys().cloned().collect())
             .await
             .unwrap();
-        let id_datapoints: HashMap<i32, proto::v1::Datapoint> = metadata
+        let id_datapoints: HashMap<i32, proto::Datapoint> = metadata
             .into_iter()
             .map(|meta| meta.id)
             .zip(datapoints.into_values())
             .collect();
 
-        let mut client = proto::v1::collector_client::CollectorClient::with_interceptor(
+        let mut client = proto::collector_client::CollectorClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
 
-        let request = tonic::Request::new(proto::v1::UpdateDatapointsRequest {
+        let request = tonic::Request::new(proto::UpdateDatapointsRequest {
             datapoints: id_datapoints,
         });
         match client.update_datapoints(request).await {
@@ -81,11 +81,11 @@ impl SDVClientTraitV1 for SDVClient {
         &mut self,
         paths: Self::PathType,
     ) -> Result<Self::GetResponseType, ClientError> {
-        let mut client = proto::v1::broker_client::BrokerClient::with_interceptor(
+        let mut client = proto::broker_client::BrokerClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
-        let args = tonic::Request::new(proto::v1::GetDatapointsRequest { datapoints: paths });
+        let args = tonic::Request::new(proto::GetDatapointsRequest { datapoints: paths });
         match client.get_datapoints(args).await {
             Ok(response) => {
                 let message = response.into_inner();
@@ -99,11 +99,11 @@ impl SDVClientTraitV1 for SDVClient {
         &mut self,
         paths: Self::SubscribeType,
     ) -> Result<Self::SubscribeResponseType, ClientError> {
-        let mut client = proto::v1::broker_client::BrokerClient::with_interceptor(
+        let mut client = proto::broker_client::BrokerClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
-        let args = tonic::Request::new(proto::v1::SubscribeRequest { query: paths });
+        let args = tonic::Request::new(proto::SubscribeRequest { query: paths });
 
         match client.subscribe(args).await {
             Ok(response) => Ok(response.into_inner()),
@@ -115,8 +115,8 @@ impl SDVClientTraitV1 for SDVClient {
         &mut self,
         datapoints: Self::UpdateActuationType,
     ) -> Result<Self::ActuateResponseType, ClientError> {
-        let args = tonic::Request::new(proto::v1::SetDatapointsRequest { datapoints });
-        let mut client = proto::v1::broker_client::BrokerClient::with_interceptor(
+        let args = tonic::Request::new(proto::SetDatapointsRequest { datapoints });
+        let mut client = proto::broker_client::BrokerClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
@@ -130,12 +130,12 @@ impl SDVClientTraitV1 for SDVClient {
         &mut self,
         paths: Self::PathType,
     ) -> Result<Self::MetadataResponseType, ClientError> {
-        let mut client = proto::v1::broker_client::BrokerClient::with_interceptor(
+        let mut client = proto::broker_client::BrokerClient::with_interceptor(
             self.basic_client.get_channel().await?.clone(),
             self.basic_client.get_auth_interceptor(),
         );
         // Empty vec == all property metadata
-        let args = tonic::Request::new(proto::v1::GetMetadataRequest { names: paths });
+        let args = tonic::Request::new(proto::GetMetadataRequest { names: paths });
         match client.get_metadata(args).await {
             Ok(response) => {
                 let message = response.into_inner();

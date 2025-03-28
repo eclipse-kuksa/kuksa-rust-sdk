@@ -13,7 +13,7 @@
 use crate::kuksa::common;
 use crate::kuksa::common::types;
 pub use crate::kuksa::common::{Client, ClientError, ClientTraitV2};
-use databroker_proto::kuksa::val::v2::{
+use crate::proto::kuksa::val::v2::{
     signal_id::Signal::Path, val_client::ValClient, ActuateRequest, BatchActuateRequest, Datapoint,
     GetServerInfoRequest, GetValueRequest, GetValuesRequest, ListMetadataRequest,
     PublishValueRequest, SignalId, SubscribeByIdRequest, SubscribeRequest, Value,
@@ -596,9 +596,9 @@ impl ClientTraitV2 for KuksaClientV2 {
 mod tests {
     use super::*;
     use crate::kuksa::val::v2::tests::TokenType::{Read, ReadWrite};
-    use crate::v2_proto::open_provider_stream_request::Action;
-    use databroker_proto::kuksa::val::v2::value::TypedValue;
-    use databroker_proto::kuksa::val::v2::ProvideActuationRequest;
+    use crate::proto::kuksa::val::v2::open_provider_stream_request::Action;
+    use crate::proto::kuksa::val::v2::value::TypedValue;
+    use crate::proto::kuksa::val::v2::ProvideActuationRequest;
     use std::fs;
     use test_tag::tag;
     use tokio::test;
@@ -905,14 +905,13 @@ mod tests {
 
         let mut stream = client.open_provider_stream(None).await.unwrap();
 
-        let provide_actuation_request =
-            databroker_proto::kuksa::val::v2::OpenProviderStreamRequest {
-                action: Some(Action::ProvideActuationRequest(ProvideActuationRequest {
-                    actuator_identifiers: vec![SignalId {
-                        signal: Some(Path(signal_path.to_string())),
-                    }],
-                })),
-            };
+        let provide_actuation_request = crate::proto::kuksa::val::v2::OpenProviderStreamRequest {
+            action: Some(Action::ProvideActuationRequest(ProvideActuationRequest {
+                actuator_identifiers: vec![SignalId {
+                    signal: Some(Path(signal_path.to_string())),
+                }],
+            })),
+        };
 
         stream.sender.send(provide_actuation_request).await.unwrap();
         stream.receiver_stream.message().await.unwrap(); // wait until databroker has processed / answered provide_actuation_request
@@ -1036,19 +1035,18 @@ mod tests {
 
         let mut stream = client.open_provider_stream(None).await.unwrap();
 
-        let provide_actuation_request =
-            databroker_proto::kuksa::val::v2::OpenProviderStreamRequest {
-                action: Some(Action::ProvideActuationRequest(ProvideActuationRequest {
-                    actuator_identifiers: vec![
-                        SignalId {
-                            signal: Some(Path(ebd_is_enabled.to_string())),
-                        },
-                        SignalId {
-                            signal: Some(Path(eba_is_enabled.to_string())),
-                        },
-                    ],
-                })),
-            };
+        let provide_actuation_request = crate::proto::kuksa::val::v2::OpenProviderStreamRequest {
+            action: Some(Action::ProvideActuationRequest(ProvideActuationRequest {
+                actuator_identifiers: vec![
+                    SignalId {
+                        signal: Some(Path(ebd_is_enabled.to_string())),
+                    },
+                    SignalId {
+                        signal: Some(Path(eba_is_enabled.to_string())),
+                    },
+                ],
+            })),
+        };
 
         stream.sender.send(provide_actuation_request).await.unwrap();
         stream.receiver_stream.message().await.unwrap();

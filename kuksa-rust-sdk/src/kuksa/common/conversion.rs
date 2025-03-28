@@ -22,9 +22,9 @@ use crate::kuksa::common::types::{
     SensorUpdateTypeV1, SensorUpdateTypeV2, SubscribeResponseSDVTypeV1, SubscribeResponseTypeV1,
     SubscribeResponseTypeV2, SubscribeSDVTypeV1, SubscribeTypeV1, UpdateActuationTypeV1,
 };
-use databroker_proto::kuksa::val::v1::{self as protoV1};
-use databroker_proto::kuksa::val::v2::{self as protoV2};
-use databroker_proto::sdv::databroker::v1 as SDVprotoV1;
+use crate::proto::kuksa::val::v1 as protoV1;
+use crate::proto::kuksa::val::v2 as protoV2;
+use crate::proto::sdv::databroker::v1 as SDVprotoV1;
 use log::warn;
 use std::collections::HashMap;
 
