@@ -13,7 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: "Run insecure Databroker with authentication enabled in detached mode"
-      run: docker run --pull=always --rm --publish ${{inputs.databroker-port}}:${{inputs.databroker-port}}/tcp -v ${{github.workspace}}/certificates:/certs --detach --name databroker ghcr.io/eclipse-kuksa/kuksa-databroker:${{ inputs.databroker-version }} --port ${{inputs.databroker-port}} --insecure --jwt-public-key /certs/jwt/jwt.key.pub
+      run: docker run --pull=always --rm --publish ${{inputs.databroker-port}}:${{inputs.databroker-port}}/tcp -v ${{github.workspace}}/submodules/kuksa-common/jwt:/certs --detach --name databroker ghcr.io/eclipse-kuksa/kuksa-databroker:${{ inputs.databroker-version }} --port ${{inputs.databroker-port}} --insecure --jwt-public-key /certs/jwt.key.pub
       shell: bash
 
     - name: Run cargo tests with authentication enabled
