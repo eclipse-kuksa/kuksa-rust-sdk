@@ -22,9 +22,9 @@ use std::collections::HashMap;
 #[tokio::main]
 async fn main() {
     let host = if cfg!(target_os = "macos") {
-        "localhost:55556"
+        "http://localhost:55556"
     } else {
-        "localhost:55555"
+        "http://localhost:55555"
     };
 
     execute_v2_calls(host).await;
@@ -38,8 +38,22 @@ async fn execute_v2_calls(host: &'static str) {
     match common::ClientTraitV2::subscribe(&mut v2_client, vec!["Vehicle.Speed".to_owned()], None)
         .await
     {
-        Ok(_) => {
+        Ok(mut stream) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
+            tokio::spawn(async move {
+                match stream.message().await {
+                    Ok(option) => {
+                        let response = option.unwrap();
+                        for entry_update in response.entries {
+                            let datapoint = entry_update.1;
+                            println!("Vehicle.Speed: {:?}", datapoint);
+                        }
+                    }
+                    Err(err) => {
+                        println!("Error: Could not receive response {:?}", err);
+                    }
+                }
+            });
         }
         Err(err) => {
             println!("Failed to subscribe to {:?}: {:?}", "Vehicle.Speed", err);
@@ -86,14 +100,25 @@ async fn execute_v1_calls(host: &'static str) {
     let mut v1_client: KuksaClient = KuksaClient::from_host(host);
 
     match common::ClientTraitV1::subscribe(&mut v1_client, vec!["Vehicle.Speed".to_owned()]).await {
-        Ok(_) => {
+        Ok(mut stream) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
+            tokio::spawn(async move {
+                match stream.message().await {
+                    Ok(option) => {
+                        let response = option.unwrap();
+                        for entry_update in response.updates {
+                            let entry = entry_update.entry.unwrap();
+                            println!("Vehicle.Speed: {:?}", entry);
+                        }
+                    }
+                    Err(err) => {
+                        println!("Error: Could not receive response {:?}", err);
+                    }
+                }
+            });
         }
         Err(err) => {
-            println!(
-                "Failed to subscribe {:?} failed: {:?}",
-                "Vehicle.Speed", err
-            );
+            println!("Failed to subscribe to {:?}: {:?}", "Vehicle.Speed", err);
         }
     }
 
@@ -133,9 +158,24 @@ async fn execute_v1_calls(host: &'static str) {
 async fn execute_sdv_calls(host: &'static str) {
     let mut sdv_client: SDVClient = SDVClient::from_host(host);
 
-    match common::SDVClientTraitV1::subscribe(&mut sdv_client, "Vehicle.Speed".to_owned()).await {
-        Ok(_) => {
+    match common::SDVClientTraitV1::subscribe(&mut sdv_client, "SELECT Vehicle.Speed".to_owned())
+        .await
+    {
+        Ok(mut stream) => {
             println!("Successfully subscribed to {:?}!", "Vehicle.Speed");
+            tokio::spawn(async move {
+                match stream.message().await {
+                    Ok(option) => {
+                        let response = option.unwrap();
+                        if let Some(speed) = response.fields.get("Vehicle.Speed") {
+                            println!("Vehicle.Speed: {:?}", speed);
+                        };
+                    }
+                    Err(err) => {
+                        println!("Error: Could not receive response {:?}", err);
+                    }
+                }
+            });
         }
         Err(err) => {
             println!("Failed to subscribe to {:?}: {:?}", "Vehicle.Speed", err);
@@ -151,7 +191,7 @@ async fn execute_sdv_calls(host: &'static str) {
         },
     );
 
-    match common::SDVClientTraitV1::set_datapoints(&mut sdv_client, datapoints).await {
+    match common::SDVClientTraitV1::update_datapoints(&mut sdv_client, datapoints).await {
         Ok(_) => {
             println!("Successfully set datapoints")
         }
