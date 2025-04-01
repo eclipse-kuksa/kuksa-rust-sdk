@@ -1,6 +1,6 @@
 [submodule "kuksa-rust-sdk/kuksa-proto"]
 	path = kuksa-rust-sdk/kuksa-proto
-	url = git@github.com:eclipse-kuksa/kuksa-proto.git
+	url = https://github.com/eclipse-kuksa/kuksa-proto.git
 [submodule "submodules/kuksa-common"]
 	path = submodules/kuksa-common
-	url = git@github.com:eclipse-kuksa/kuksa-common.git
+	url = https://github.com/eclipse-kuksa/kuksa-common.git
