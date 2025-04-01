@@ -22,6 +22,12 @@ To use the Rust SDK for KUKSA add the following entry to the cargo.toml of the c
 kuksa-rust-sdk = "<<latest-version>>"
 ```
 
+To check a development version try:
+
+```toml
+kuksa-rust-sdk = { git = "https://github.com/eclipse-kuksa/kuksa-rust-sdk.git", branch = "main" }
+```
+
 ### kuksa.val.v2
 
 #### Create an SDVClient
