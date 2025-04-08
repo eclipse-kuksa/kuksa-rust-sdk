@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version = "1.17.0", features = ["full"] }
+tokio = { version = "1.43.1", features = ["full"] }
 tokio-stream = "0.1.8"
 tonic = { workspace = true, features = ["transport", "channel"] }
 prost-types = { workspace = true }
