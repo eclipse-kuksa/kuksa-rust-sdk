@@ -12,7 +12,7 @@ The following protocols are supported by the Rust SDK:
 
 The following samples show to initiate a Client and how to subscribe, read and update a value.
 You can find the sample
-code [here](https://github.com/eclipse-kuksa/kuksa-databroker/tree/main/databroker-examples/examples/kuksa_rust_sdk.rs)
+code [here](https://github.com/eclipse-kuksa/kuksa-rust-sdk/tree/main/databroker-examples/examples/kuksa_rust_sdk.rs)
 
 ### cargo.toml
 
