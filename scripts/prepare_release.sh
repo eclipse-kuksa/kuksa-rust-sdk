@@ -52,8 +52,6 @@ $SED_COMMAND -i -E "s/^version = \"${VERSION_REGEX}\"$/version = \"${VERSION}\"/
 
 # Now make sure Cargo.lock is updated to reflect this
 cargo update
-cd lib
-cargo update
 
 # Create release commit and tag it
 #git commit -a -m "Release ${VERSION}"
