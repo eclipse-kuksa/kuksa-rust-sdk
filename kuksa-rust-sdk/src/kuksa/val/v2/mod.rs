@@ -1437,7 +1437,7 @@ mod tests {
             ClientError::Status(status) => {
                 assert_eq!(status.code(), code);
             }
-            _ => panic!("unexpected error"),
+            _ => std::panic!("unexpected error"),
         }
     }
 

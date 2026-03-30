@@ -17,10 +17,10 @@ use std::{env, path::PathBuf};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::env::set_var("PROTOC", protobuf_src::protoc());
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .compile_well_known_types(false)
         .protoc_arg("--experimental_allow_proto3_optional")
-        .compile(
+        .compile_protos(
             &[
                 "kuksa-proto/proto/sdv/databroker/v1/broker.proto",
                 "kuksa-proto/proto/sdv/databroker/v1/types.proto",
@@ -34,9 +34,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )?;
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("kuksa.val.v2_descriptor.bin"))
-        .compile(
+        .compile_protos(
             &[
                 "kuksa-proto/proto/kuksa/val/v2/val.proto",
                 "kuksa-proto/proto/kuksa/val/v2/types.proto",
@@ -44,9 +44,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &["kuksa-proto/proto"],
         )
         .unwrap();
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("kuksa.val.v1_descriptor.bin"))
-        .compile(
+        .compile_protos(
             &[
                 "kuksa-proto/proto/kuksa/val/v1/val.proto",
                 "kuksa-proto/proto/kuksa/val/v1/types.proto",
@@ -55,9 +55,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .unwrap();
 
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("sdv.databroker.v1_descriptor.bin"))
-        .compile(
+        .compile_protos(
             &[
                 "kuksa-proto/proto/sdv/databroker/v1/types.proto",
                 "kuksa-proto/proto/sdv/databroker/v1/collector.proto",

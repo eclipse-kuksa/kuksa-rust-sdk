@@ -35,6 +35,8 @@ pub mod sdv {
 pub mod proto {
     pub mod kuksa {
         pub mod val {
+            // we need to add this, as the code generated from .proto files contain document strings that clippy does not like.
+            #[allow(clippy::doc_lazy_continuation)]
             pub mod v1 {
                 pub const FILE_DESCRIPTOR_SET: &[u8] =
                     tonic::include_file_descriptor_set!("kuksa.val.v1_descriptor");
@@ -157,6 +159,8 @@ pub mod proto {
                     }
                 }
             }
+            // we need to add this, as the code generated from .proto files contain document strings that clippy does not like.
+            #[allow(clippy::doc_lazy_continuation)]
             pub mod v2 {
                 use value::TypedValue;
 
@@ -512,6 +516,8 @@ pub mod proto {
     }
     pub mod sdv {
         pub mod databroker {
+            // we need to add this, as the code generated from .proto files contain document strings that clippy does not like.
+            #[allow(clippy::doc_lazy_continuation)]
             pub mod v1 {
                 pub const FILE_DESCRIPTOR_SET: &[u8] =
                     tonic::include_file_descriptor_set!("sdv.databroker.v1_descriptor");

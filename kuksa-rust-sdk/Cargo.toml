@@ -1,6 +1,6 @@
 [package]
 name = "kuksa-rust-sdk"
-version = "0.2.1"
+version = "0.3.0-dev"
 authors = ["Eclipse KUKSA Project"]
 edition = "2021"
 license = "Apache-2.0"
@@ -13,7 +13,7 @@ categories = ["automotive"]
 
 [dependencies]
 futures-core = "0.3.31"
-http = "0.2.8"
+http = "1"
 log = "0.4"
 prost = { workspace = true }
 prost-types = { workspace = true }
@@ -21,7 +21,8 @@ tokio = { workspace = true, features = [
     "macros",
 ] }
 tokio-stream = { workspace = true, features = ["sync"] }
-tonic = { workspace = true, features = ["transport", "channel", "codegen", "prost"] }
+tonic = { workspace = true, features = ["transport", "channel", "codegen"] }
+tonic-prost = { workspace = true }
 
 [dev-dependencies]
 prost = { workspace = true }
@@ -30,12 +31,13 @@ test-case = "3.3.1"
 test-tag = "0.1.4"
 
 [build-dependencies]
-tonic-build = { workspace = true, features = ["transport", "prost"] }
+tonic-build = { workspace = true }
+tonic-prost-build = { workspace = true }
 protobuf-src = "1.1.0"
 
 [features]
 # default = ["tls"] # from sdv module?
-tls = ["tonic/tls"]
+tls = ["tonic/tls-ring"]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(test)'] }

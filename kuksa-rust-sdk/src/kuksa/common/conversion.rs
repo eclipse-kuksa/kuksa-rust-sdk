@@ -106,7 +106,7 @@ impl ConvertToSDV<GetResponseSDVTypeV1> for GetResponseTypeV1 {
                     let value = entry.clone().convert_to_sdv();
                     let dp = SDVprotoV1::Datapoint {
                         value,
-                        timestamp: entry.timestamp.clone(),
+                        timestamp: entry.timestamp,
                     };
 
                     Some((data_entry.path, dp))
@@ -1477,7 +1477,7 @@ mod tests {
 
     #[test]
     fn test_convert_to_v1_metadata_sdv() {
-        let metadata_cases = vec![
+        let metadata_cases = [
             (
                 SDVprotoV1::Metadata {
                     data_type: SDVprotoV1::DataType::Int32.into(),
