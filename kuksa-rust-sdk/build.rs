@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &["kuksa-proto/proto"],
         )?;
 
-    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_dir = PathBuf::from(env::var("OUT_DIR")?);
     tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("kuksa.val.v2_descriptor.bin"))
         .compile_protos(
@@ -42,8 +42,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "kuksa-proto/proto/kuksa/val/v2/types.proto",
             ],
             &["kuksa-proto/proto"],
-        )
-        .unwrap();
+        )?;
+
     tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("kuksa.val.v1_descriptor.bin"))
         .compile_protos(
@@ -52,8 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "kuksa-proto/proto/kuksa/val/v1/types.proto",
             ],
             &["kuksa-proto/proto"],
-        )
-        .unwrap();
+        )?;
 
     tonic_prost_build::configure()
         .file_descriptor_set_path(out_dir.join("sdv.databroker.v1_descriptor.bin"))
@@ -64,8 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "kuksa-proto/proto/sdv/databroker/v1/broker.proto",
             ],
             &["kuksa-proto/proto"],
-        )
-        .unwrap();
+        )?;
 
     Ok(())
 }
