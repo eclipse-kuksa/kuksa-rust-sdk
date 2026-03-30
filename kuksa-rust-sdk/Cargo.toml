@@ -31,7 +31,6 @@ test-case = "3.3.1"
 test-tag = "0.1.4"
 
 [build-dependencies]
-tonic-build = { workspace = true }
 tonic-prost-build = { workspace = true }
 protobuf-src = "1.1.0"
 

@@ -18,6 +18,5 @@ tokio = "1.17.0"
 # tokio-stream has no features
 tokio-stream = "0.1.8"
 tonic = { version = "0.14", default-features = false }
-tonic-build = { version = "0.14", default-features = false }
 tonic-prost = { version = "0.14" }
 tonic-prost-build = { version = "0.14" }
