@@ -19,9 +19,6 @@ on:
   pull_request:
   workflow_call:
   workflow_dispatch:
-  # Run every Sunday night to check regressions, for example from clippy
-  schedule:
-    - cron: "0 4 * * 0"
 
 # suffix to avoid cancellation when running from release workflow
 concurrency:
