@@ -644,6 +644,56 @@ mod tests {
         }
     }
 
+    async fn register_provider_and_spawn_listener(
+        signals: Vec<String>,
+    ) -> tokio::task::JoinHandle<()> {
+        let mut provider_client = KuksaClientV2::new_test_client(Some(ReadWrite));
+        let mut stream = provider_client.open_provider_stream(None).await.unwrap();
+
+        let actuator_identifiers = signals
+            .into_iter()
+            .map(|signal| SignalId {
+                signal: Some(Path(signal)),
+            })
+            .collect();
+
+        let request = crate::proto::kuksa::val::v2::OpenProviderStreamRequest {
+            action: Some(Action::ProvideActuationRequest(ProvideActuationRequest {
+                actuator_identifiers,
+            })),
+        };
+
+        stream
+            .sender
+            .send(request)
+            .await
+            .expect("Could not send ProvideActuationRequest");
+
+        tokio::spawn(async move {
+            loop {
+                match stream.receiver_stream.message().await {
+                    Ok(Some(response)) => {
+                        if let Some(
+                            crate::v2_proto::open_provider_stream_response::Action::BatchActuateStreamRequest(
+                                batch_actuate_stream_request,
+                            ),
+                        ) = response.action
+                        {
+                            for actuate_request in batch_actuate_stream_request.actuate_requests {
+                                println!("Received ActuateRequest: {actuate_request:?}");
+                            }
+                        }
+                    }
+                    Ok(None) => break,
+                    Err(err) => {
+                        println!("Error: Could not receive response {err:?}");
+                        break;
+                    }
+                }
+            }
+        })
+    }
+
     #[tag(integration, insecure)]
     #[test]
     async fn test_get_value() {
@@ -1149,6 +1199,12 @@ mod tests {
 
         let eba_is_enabled = "Vehicle.ADAS.EBA.IsEnabled".to_string();
         let ebd_is_enabled = "Vehicle.ADAS.EBD.IsEnabled".to_string();
+
+        let _provider_listener = register_provider_and_spawn_listener(vec![
+            eba_is_enabled.clone(),
+            ebd_is_enabled.clone(),
+        ])
+        .await;
 
         let mut values = HashMap::new();
         values.insert(
